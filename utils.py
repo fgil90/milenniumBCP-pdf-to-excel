@@ -5,7 +5,7 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import tabula
-
+import re
 
 class Parser():
 
@@ -27,7 +27,7 @@ class Parser():
         except:
             print('Number of columns is not matching. Expected ' + str(len(df.columns)) + ', found ' + str(len(columns)))
 
-        df['categoria'] = ''
+        df['categoria'] = df.apply(Parser.parse_category, axis=1, filter=keywords)
            
         Parser.fix_numeric(df,'data_lanc')
         Parser.fix_numeric(df,'data_valor')
@@ -36,6 +36,13 @@ class Parser():
         Parser.fix_numeric(df,'saldo')
       
         return df
+
+    @classmethod
+    def parse_category(self, row, filter={}):
+        for key in filter:
+            if any(re.search(keyword, row['descritivo'], re.IGNORECASE) for keyword in filter[key]):
+                return key
+        return 'Other'
 
     @classmethod
     def fix_numeric(self, df:pd.DataFrame, cat:str):

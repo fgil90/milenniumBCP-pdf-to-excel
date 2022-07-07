@@ -19,7 +19,7 @@ def main():
         print("No files in Output folder")
 
     try:
-        dataframes = read_xlsl()
+        dataframes = read_xlsls()
         print("Files read Sucessfully")
     except:
         print("Could not read files sucessfully.")
@@ -45,9 +45,9 @@ def main():
             case 0:
                 return
             case 1:
-                read_pdf()
+                read_pdfs()
             case 2:
-                dataframes = read_xlsl()
+                dataframes = read_xlsls()
             case 3:
                 if (len(dataframes) == 0):
                     print('There are no loaded dataframes in memory')
@@ -68,42 +68,47 @@ def main():
 def has_empty_output_folder()->bool:
     return (len(os.listdir(default_output_path)) == 0)
 
-def read_xlsl():
-    files = [f for f in os.listdir(default_output_path)]
+def read_xlsls():
+    output_files = [f for f in os.listdir(default_output_path)]
     dataframes = [pd.DataFrame]
-    for file in files:
+    for file in output_files:
         path = os.path.join(default_output_path, file)
         try:
             df = Parser.parse_xlsl(path)
             dataframes.append(df)
-        except:
+        except Exception as e:
             print('Could not parse dataframe ' + file)
+            print('Exception: ' + e)
             return
     return dataframes
 
-def read_pdf():
-    files = [f for f in os.listdir(default_input_path)]
-    for file in files:
+def read_pdfs():
+    input_files = [f for f in os.listdir(default_input_path)]
+    output_files = [f for f in os.listdir(default_output_path)]
+    for file in input_files:
+        output_file = file.replace('.pdf', '.xlsx')
+        if (output_file in output_files):
+            print(".xlsl file with the same name already exists. " + output_file)
+            continue
         path = os.path.join(default_input_path, file)
-        # try:
-        df = Parser.parse_pdf(path)
-        save_xlsl(df, file.replace('.pdf', '.xlsx'))
-        # except:
-        #     print('Could not parse dataframe ' + file)
+        try:
+            df = Parser.parse_pdf(path)
+            save_xlsl(df, file.replace('.pdf', '.xlsx'))
+        except Exception as e:
+            print('Could not parse dataframe ' + file)
+            print('Exception: ' + e)
 
 
 def save_xlsl(df:pd.DataFrame, file_name:str):
     try:
         excel_file_path = os.path.join(default_output_path, file_name)
-        if (os.path.exists(excel_file_path)):
-            print(".xlsl file with the same name already exists. " + excel_file_path)
-            return
         df.to_excel(excel_file_path)
-    except:
+    except Exception as e:
         print('Could not save file as .xlsl')
+        print('Exception: ' + e)
+
 
 if __name__ == "__main__":
-
     main()
 
 # load excel save with data
