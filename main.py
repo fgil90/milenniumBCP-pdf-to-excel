@@ -11,7 +11,7 @@ default_output_path = 'Output/'
 
 def main():
 
-    print('You can add categories to your expenses and revenue manually after you parse the .pdf into a .xlsl if you want or configure some keywords in the keywords file before (STILL NOT IMPLEMENTED)')
+    print('You can add categories to your expenses and revenue manually after you parse the .pdf into a .xlsl if you want or configure some keywords in the keywords.json file before (STILL NOT IMPLEMENTED)')
     dataframes = [pd.DataFrame]
 
     print("Attempting to read .xlsl files in Output folder...")
